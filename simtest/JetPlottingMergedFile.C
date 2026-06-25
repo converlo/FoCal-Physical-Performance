@@ -54,8 +54,7 @@ void JetPlottingMergedFile(int Rvalue = 2)
     double EtameansE[nEtaBins - 1][nEBins - 1];
     double EtaSDE[nEtaBins - 1][nEBins - 1];
 
-    TFile *jetFile = TFile::Open(Form("analysisJets.root"));
-
+    TFile *jetFile = TFile::Open(Form("JetPlottingMerged_R%d.root", int(Rvals[Rvalue] * 10)));
     TTree *jetTree = (TTree *)jetFile->Get("jetTree");
     TTree *TruthjetTree = (TTree *)jetFile->Get("truthjetTree");
     // TTree *PDGTree = (TTree *)jetFile->Get("inPDGTree");
