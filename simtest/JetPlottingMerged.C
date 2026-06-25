@@ -17,8 +17,10 @@ double GetMedian(TH1D *h);
 void JetPlottingMerged(int Rvalue = 2)
 {
     const int nNorm = 1;
-    const float normalizations[nNorm] = {0.0611191, 0.00717001, 0.000558759, 0.000107936, 4.32163e-05, 9.57109e-06, 1.24606e-06, 6.01382e-08}; //{0.0610658,0.00716477,0.000557627,0.000107816,4.31694e-05,9.62255e-06,1.24904e-06,5.99517e-08};
-    const float nFolders[nNorm] = {500.0, 500.0, 250.0, 250.0, 250.0, 250.0, 250.0, 250.0};
+    const float normalizations[nNorm] = {1.0};
+    const float nFolders[nNorm] = {1.0}; 
+//    const float normalizations[nNorm] = {0.0611191, 0.00717001, 0.000558759, 0.000107936, 4.32163e-05, 9.57109e-06, 1.24606e-06, 6.01382e-08}; //{0.0610658,0.00716477,0.000557627,0.000107816,4.31694e-05,9.62255e-06,1.24904e-06,5.99517e-08};
+//    const float nFolders[nNorm] = {500.0, 500.0, 250.0, 250.0, 250.0, 250.0, 250.0, 250.0};
 
     int pTHardRange[] = {0, 1500};
 
