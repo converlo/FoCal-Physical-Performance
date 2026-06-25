@@ -261,7 +261,7 @@ void JetPlottingMerged(int Rvalue = 2)
         fout->Close();
     }
 
-    gSystem->Exec(Form("hadd Data20230816/JES/EnMergedR%d_pT_0Mass.root Data20230816/JES/En20230728_pythia8_JetJet_*.root", int(Rvals[Rvalue] * 10)));
+//    gSystem->Exec(Form("hadd Data20230816/JES/EnMergedR%d_pT_0Mass.root Data20230816/JES/En20230728_pythia8_JetJet_*.root", int(Rvals[Rvalue] * 10)));
 
 }
 
