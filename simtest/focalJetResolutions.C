@@ -44,11 +44,11 @@ void focalJetResolutions(
   Style_t style[3] = {1, 5, 7};
   Size_t markerS[3] = {2, 2, 2}; // 2.4
 
-  TString radiusOut[2] = {"R02", "R04", "R06"};
-  TString radiusLabel[2] = {"#it{R} = 0.2", "#it{R} = 0.4",  "#it{R} = 0.6"};
+  TString radiusOut[3] = {"R02", "R04", "R06"};
+  TString radiusLabel[3] = {"#it{R} = 0.2", "#it{R} = 0.4",  "#it{R} = 0.6"};
   TString etaOut[3] = {"Full", "40to45", "45to49"};
   TString etaRange[3] = {"4.0 < #it{#eta}_{jet} < 4.9", "4.0 < #it{#eta}_{jet} < 4.5", "4.5 < #it{#eta}_{jet} < 4.9"}; //{3.8, 4.5, 5.1}  = {"3.4+R < #it{#eta}_{jet} < 5.5-R", "4.0 < #it{#eta}_{jet} < 4.5", "4.5 < #it{#eta}_{jet} < 4.9"};
-  double rangeJES[2][2] = {{-0.35, -0.05}, {-0.35, -0.05}};
+  double rangeJES[3][2] = {{-0.35, -0.05}, {-0.35, -0.05},  {-0.35, -0.05}};
   const int maxNPtbins = 13;
   int exampleBins[3] = {0, 2, 5}; // 0,2,5 5,6,7  3,5,6
   // double binningPt[10]  = {2., 5., 10., 15., 20., 25., 30., 35., 40., 70.};
@@ -56,11 +56,11 @@ void focalJetResolutions(
   // double binningPt[14]= {2.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 50.0, 60.0, 70.0, 80.0, 100.0};// 400.0};
   double binningPt[14] = {5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 50.0, 60.0, 70.0, 80.0, 100.0, 150.0}; // nPtBins = 14
 
-  TH2D *histResponseMat_pT[2][3];
-  TH1D *histMean_pT[2][3];
-  TH1D *histMedian_pT[2][3];
-  TH1D *histSigma_pT[2][3];
-  TH1D *histDeltaPt_bins[2][3][maxNPtbins];
+  TH2D *histResponseMat_pT[3][3];
+  TH1D *histMean_pT[3][3];
+  TH1D *histMedian_pT[3][3];
+  TH1D *histSigma_pT[3][3];
+  TH1D *histDeltaPt_bins[3][3][maxNPtbins];
 
   TH1D *hgausMeanspT;
   TH1D *hgausSDpT;
@@ -152,6 +152,42 @@ void focalJetResolutions(
     std::cout << "R = 0.4 \t" << histMean_pT[1][i] << "\t" << histSigma_pT[1][i] << "\t" << histResponseMat_pT[1][i] << std::endl;
   }
 
+
+TFile *fileR06 = new TFile(inputfileR06.Data());
+  for (int i = 0; i < 3; i++)
+  {
+    if (i == 0)
+    {
+      histResponseMat_pT[2][i] = (TH2D *)fileR06->Get("hRespMatrix_pT");
+      histMean_pT[2][i] = (TH1D *)fileR06->Get("hMeanpT");
+      histMedian_pT[2][i] = (TH1D *)fileR06->Get("hMedianpT");
+      histSigma_pT[2][i] = (TH1D *)fileR06->Get("hSDpT");
+      for (int p = 0; p < maxNPtbins; p++)
+      {
+        histDeltaPt_bins[2][i][p] = (TH1D *)fileR06->Get(Form("hjetRatiopT_%d", p));
+        histDeltaPt_bins[2][i][p]->Scale(histDeltaPt_bins[2][i][p]->GetBinWidth(1));
+        histDeltaPt_bins[2][i][p]->Scale(1. / histDeltaPt_bins[2][i][p]->Integral());
+      }
+    }
+    else
+    {
+      histResponseMat_pT[2][i] = (TH2D *)fileR06->Get(Form("hRespMatrix_pT_Eta_%i", i - 1));
+      histMean_pT[2][i] = (TH1D *)fileR06->Get(Form("hEtaMeanpT_%i", i - 1));
+      histMedian_pT[2][i] = (TH1D *)fileR06->Get(Form("hEtaMedianpT_%i", i - 1));
+      histSigma_pT[2][i] = (TH1D *)fileR06->Get(Form("hEtaSDpT_%i", i - 1));
+      for (int p = 0; p < maxNPtbins; p++)
+      {
+        histDeltaPt_bins[2][i][p] = (TH1D *)fileR06->Get(Form("hjetRatiopT_Eta_%i_%i", i - 1, p));
+        histDeltaPt_bins[2][i][p]->Scale(histDeltaPt_bins[2][i][p]->GetBinWidth(1));
+        histDeltaPt_bins[2][i][p]->Scale(1. / histDeltaPt_bins[2][i][p]->Integral());
+      }
+    }
+    std::cout << "R = 0.6 \t" << histMean_pT[2][i] << "\t" << histSigma_pT[2][i] << "\t" << histResponseMat_pT[2][i] << std::endl;
+  }
+
+
+
+
   TCanvas *cJES = new TCanvas("cJES", "cJES", 2 * 600, 2 * 400);
   DrawPaperCanvasSettings(cJES, 0.081, 0.01, 0.013, 0.11);
   cJES->cd();
@@ -222,7 +258,7 @@ void focalJetResolutions(
     TLegend *leg2 = GetAndSetLegend2(0.2, 0.8 - 3 * 1.0 * textSize, 0.3, 0.82, textSize, 1, "", 42, 0.35);
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histMean_pT[r][e], marker[e], markerS[e], colors[e], colors[e]);
       else
       {
@@ -261,7 +297,7 @@ void focalJetResolutions(
     TLegend *leg3 = GetAndSetLegend2(0.25, 0.78 - 4 * 1.1 * textSize, 0.35, 0.78 - 1 * 1.1 * textSize, textSize, 1, "", 42, 0.3);
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histSigma_pT[r][e], marker[e], markerS[e], colors[e], colors[e]);
       else
       {
@@ -437,7 +473,7 @@ void focalJetResolutions(
 
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histDeltaPt_bins[r][e][exampleBins[0]], marker[e], markerS[e] * 1.5, colors[e], colors[e]);
       else
         DrawSetMarker(histDeltaPt_bins[r][e][exampleBins[0]], markerMC[e], markerS[e] * 1.9, colorsMC[e], colorsMC[e]);
@@ -462,7 +498,7 @@ void focalJetResolutions(
     TLegend *leg2 = GetAndSetLegend2(0.03, 0.945 - 2 * 1. * textSizeLabels[1], 0.4, 0.945, textSizeLabels[1], 1, "", 42, 0.35);
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histDeltaPt_bins[r][e][exampleBins[1]], marker[e], markerS[e] * 1.5, colors[e], colors[e]);
       else
         DrawSetMarker(histDeltaPt_bins[r][e][exampleBins[1]], markerMC[e], markerS[e] * 1.9, colorsMC[e], colorsMC[e]);
@@ -484,7 +520,7 @@ void focalJetResolutions(
 
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histDeltaPt_bins[r][e][exampleBins[2]], marker[e], markerS[e] * 1.5, colors[e], colors[e]);
       else
         DrawSetMarker(histDeltaPt_bins[r][e][exampleBins[2]], markerMC[e], markerS[e] * 1.9, colorsMC[e], colorsMC[e]);

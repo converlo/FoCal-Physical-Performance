@@ -26,12 +26,14 @@ double textSize = 0.05; // 5;
 
 void focalJetResolutionsEnergy(
     TString inputfileR02 = "JetPlottingMergedFile_R2.root",
-    TString inputfileR04 = "JetPlottingMergedFile_R4.root")
+    TString inputfileR04 = "JetPlottingMergedFile_R4.root",
+    TString inputfileR06 = "JetPlottingMergedFile_R6.root"
+)
 {
   StyleSettingsPaper();
   TGaxis::SetMaxDigits(4);
 
-  int RMax = 2;       // how many R values you want to draw
+  int RMax = 3;       // how many R values you want to draw
   int JESMinX = 200;  // xmin for the jes and jer plots, also used for other E min
   int JESMaxX = 3050; // xmin for the jes and jer plots, also used for other E max
 
@@ -42,21 +44,21 @@ void focalJetResolutionsEnergy(
   Style_t style[3] = {1, 5, 7};
   Size_t markerS[3] = {2, 2, 2}; // 2.4
 
-  TString radiusOut[2] = {"R02", "R04"};
-  TString radiusLabel[2] = {"#it{R} = 0.2", "#it{R} = 0.4"};
+  TString radiusOut[3] = {"R02", "R04", "R06"};
+  TString radiusLabel[3] = {"#it{R} = 0.2", "#it{R} = 0.4", "#it{R} = 0.6"};
   TString etaOut[3] = {"Full", "40to45", "45to49"};
   TString etaRange[3] = {"4.0 < #it{#eta}_{jet} < 4.9", "4.0 < #it{#eta}_{jet} < 4.5", "4.5 < #it{#eta}_{jet} < 4.9"}; //{3.8, 4.5, 5.1}  = {"3.4+R < #it{#eta}_{jet} < 5.5-R", "4.0 < #it{#eta}_{jet} < 4.5", "4.5 < #it{#eta}_{jet} < 4.9"};
-  double rangeJES[2][2] = {{-0.35, -0.05}, {-0.35, -0.05}};
+  double rangeJES[3][2] = {{-0.35, -0.05}, {-0.35, -0.05}, {-0.35, -0.05}};
   const int maxNEbins = 14;
   int exampleBins[3] = {7, 9, 11};
   // double binningE[16]  = {0.0, 50.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0, 1000.0, 1250.0, 1500.0, 1750.0, 2000.0};
   double binningE[15] = {100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0, 1000.0, 1250.0, 1500.0, 1750.0, 2000.0, 3000.0}; // const int nEBins  = 15;
 
-  TH2D *histResponseMat_E[2][3];
-  TH1D *histMean_E[2][3];
-  TH1D *histMedian_E[2][3];
-  TH1D *histSigma_E[2][3];
-  TH1D *histDeltaE_bins[2][3][maxNEbins];
+  TH2D *histResponseMat_E[3][3];
+  TH1D *histMean_E[3][3];
+  TH1D *histMedian_E[3][3];
+  TH1D *histSigma_E[3][3];
+  TH1D *histDeltaE_bins[3][3][maxNEbins];
 
   TH1D *hgausMeansE;
   TH1D *hgausSDE;
@@ -153,6 +155,41 @@ void focalJetResolutionsEnergy(
     std::cout << "R = 0.4 \t" << histMean_E[1][i] << "\t" << histSigma_E[1][i] << "\t" << histResponseMat_E[1][i] << std::endl;
   }
 
+
+  TFile *fileR06 = new TFile(inputfileR06.Data());
+  for (int i = 0; i < 3; i++)
+  {
+    if (i == 0)
+    {
+      histResponseMat_E[2][i] = (TH2D *)fileR06->Get("hRespMatrix_E");
+      histMean_E[2][i] = (TH1D *)fileR06->Get("hMeanE");
+      histMedian_E[2][i] = (TH1D *)fileR06->Get("hMedianE");
+      histSigma_E[2][i] = (TH1D *)fileR06->Get("hSDE");
+      for (int p = 0; p < maxNEbins; p++)
+      {
+        histDeltaE_bins[2][i][p] = (TH1D *)fileR06->Get(Form("hjetRatioE_%d", p));
+        histDeltaE_bins[2][i][p]->Scale(histDeltaE_bins[2][i][p]->GetBinWidth(1));
+        histDeltaE_bins[2][i][p]->Scale(1. / histDeltaE_bins[2][i][p]->Integral());
+      }
+    }
+    else
+    {
+      histResponseMat_E[2][i] = (TH2D *)fileR06->Get(Form("hRespMatrix_E_Eta_%i", i - 1));
+      histMean_E[2][i] = (TH1D *)fileR06->Get(Form("hEtaMeanE_%i", i - 1));
+      histMedian_E[2][i] = (TH1D *)fileR06->Get(Form("hEtaMedianE_%i", i - 1));
+      histSigma_E[2][i] = (TH1D *)fileR06->Get(Form("hEtaSDE_%i", i - 1));
+      for (int p = 0; p < maxNEbins; p++)
+      {
+        histDeltaE_bins[2][i][p] = (TH1D *)fileR06->Get(Form("hjetRatioE_Eta_%i_%i", i - 1, p));
+        histDeltaE_bins[2][i][p]->Scale(histDeltaE_bins[2][i][p]->GetBinWidth(1));
+        histDeltaE_bins[2][i][p]->Scale(1. / histDeltaE_bins[2][i][p]->Integral());
+      }
+    }
+    std::cout << "R = 0.6 \t" << histMean_E[2][i] << "\t" << histSigma_E[2][i] << "\t" << histResponseMat_E[2][i] << std::endl;
+  }
+
+
+
   TCanvas *cJES = new TCanvas("cJES", "cJES", 2 * 600, 2 * 400);
   DrawPaperCanvasSettings(cJES, 0.081, 0.01, 0.013, 0.11);
   cJES->cd();
@@ -223,7 +260,7 @@ void focalJetResolutionsEnergy(
     TLegend *leg2 = GetAndSetLegend2(0.20, 0.8 - 3 * 1.0 * textSize, 0.3, 0.82, textSize, 1, "", 42, 0.35);
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histMean_E[r][e], marker[e], markerS[e], colors[e], colors[e]);
       else
       {
@@ -260,7 +297,7 @@ void focalJetResolutionsEnergy(
     TLegend *leg3 = GetAndSetLegend2(0.25, 0.78 - 4 * 1.1 * textSize, 0.35, 0.78 - 1 * 1.1 * textSize, textSize, 1, "", 42, 0.3);
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histSigma_E[r][e], marker[e], markerS[e], colors[e], colors[e]);
       else
       {
@@ -436,7 +473,7 @@ void focalJetResolutionsEnergy(
 
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histDeltaE_bins[r][e][exampleBins[0]], marker[e], markerS[e] * 1.5, colors[e], colors[e]);
       else
         DrawSetMarker(histDeltaE_bins[r][e][exampleBins[0]], markerMC[e], markerS[e] * 1.9, colorsMC[e], colorsMC[e]);
@@ -461,7 +498,7 @@ void focalJetResolutionsEnergy(
     TLegend *leg2 = GetAndSetLegend2(0.03, 0.945 - 2 * 1. * textSizeLabels[1], 0.4, 0.945, textSizeLabels[1], 1, "", 42, 0.35);
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histDeltaE_bins[r][e][exampleBins[1]], marker[e], markerS[e] * 1.5, colors[e], colors[e]);
       else
         DrawSetMarker(histDeltaE_bins[r][e][exampleBins[1]], markerMC[e], markerS[e] * 1.9, colorsMC[e], colorsMC[e]);
@@ -483,7 +520,7 @@ void focalJetResolutionsEnergy(
 
     for (int r = 0; r < RMax; r++)
     {
-      if (r == 1)
+      if (r != 0)
         DrawSetMarker(histDeltaE_bins[r][e][exampleBins[2]], marker[e], markerS[e] * 1.5, colors[e], colors[e]);
       else
         DrawSetMarker(histDeltaE_bins[r][e][exampleBins[2]], markerMC[e], markerS[e] * 1.9, colorsMC[e], colorsMC[e]);
