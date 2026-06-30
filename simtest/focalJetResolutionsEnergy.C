@@ -31,7 +31,7 @@ void focalJetResolutionsEnergy(
   StyleSettingsPaper();
   TGaxis::SetMaxDigits(4);
 
-  int RMax = 1;       // how many R values you want to draw
+  int RMax = 2;       // how many R values you want to draw
   int JESMinX = 200;  // xmin for the jes and jer plots, also used for other E min
   int JESMaxX = 3050; // xmin for the jes and jer plots, also used for other E max
 
@@ -42,8 +42,8 @@ void focalJetResolutionsEnergy(
   Style_t style[3] = {1, 5, 7};
   Size_t markerS[3] = {2, 2, 2}; // 2.4
 
-  TString radiusOut[2] = {"R06", "R04"};
-  TString radiusLabel[2] = {"#it{R} = 0.6", "#it{R} = 0.4"};
+  TString radiusOut[2] = {"R02", "R04"};
+  TString radiusLabel[2] = {"#it{R} = 0.2", "#it{R} = 0.4"};
   TString etaOut[3] = {"Full", "40to45", "45to49"};
   TString etaRange[3] = {"4.0 < #it{#eta}_{jet} < 4.9", "4.0 < #it{#eta}_{jet} < 4.5", "4.5 < #it{#eta}_{jet} < 4.9"}; //{3.8, 4.5, 5.1}  = {"3.4+R < #it{#eta}_{jet} < 5.5-R", "4.0 < #it{#eta}_{jet} < 4.5", "4.5 < #it{#eta}_{jet} < 4.9"};
   double rangeJES[2][2] = {{-0.35, -0.05}, {-0.35, -0.05}};
@@ -241,8 +241,8 @@ void focalJetResolutionsEnergy(
     leg2->Draw("same");
     drawLatexAdd("ALICE simulation, pp #sqrt{#it{s}} = 14 TeV", 0.95, 0.965 - 1 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
     drawLatexAdd("FoCal upgrade", 0.95, 0.965 - 2 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
-    drawLatexAdd(Form("jets, anti-#it{k}_{T}, #it{R} = 0.6, %s", etaRange[e].Data()), 0.95, 0.965 - 3 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
-    // drawLatexAdd("#it{R} = 0.6",0.95,0.965-4.2*1.1*textSize, textSize,kFALSE, kFALSE, kTRUE);
+    drawLatexAdd(Form("jets, anti-#it{k}_{T}, #it{R} = 0.2, %s", etaRange[e].Data()), 0.95, 0.965 - 3 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
+    // drawLatexAdd("#it{R} = 0.2",0.95,0.965-4.2*1.1*textSize, textSize,kFALSE, kFALSE, kTRUE);
     drawLatexAdd("#Delta#it{E} = (#it{E}_{det} #font[122]{-} #it{E}_{part})/#it{E}_{part}", 0.95, 0.965 - 4.5 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
     jesframe->Draw("axis,same");
 
@@ -276,7 +276,7 @@ void focalJetResolutionsEnergy(
     leg3->Draw("same");
     drawLatexAdd("ALICE simulation, pp #sqrt{#it{s}} = 14 TeV", 0.95, 0.965 - 1 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
     drawLatexAdd("FoCal upgrade", 0.95, 0.965 - 2 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
-    drawLatexAdd(Form("jets, anti-#it{k}_{T}, #it{R} = 0.6, %s", etaRange[e].Data()), 0.95, 0.965 - 3 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
+    drawLatexAdd(Form("jets, anti-#it{k}_{T}, #it{R} = 0.2, %s", etaRange[e].Data()), 0.95, 0.965 - 3 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
     drawLatexAdd("#Delta#it{E} = (#it{E}_{det} #font[122]{-} #it{E}_{part})/#it{E}_{part}", 0.95, 0.965 - 4.5 * 1.1 * textSize, textSize, kFALSE, kFALSE, kTRUE);
     jerframe->Draw("axis,same");
 
